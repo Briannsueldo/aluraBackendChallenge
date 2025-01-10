@@ -44,8 +44,5 @@ public class ApiConsultationObject extends ApiConsultation {
         consult.executeRequest(currency);
 
         return consult;
-
-        /* System.out.println("Result " + consult.getResult());
-        System.out.println("Convertion rates " + consult.getConversionRates()); */
     }
 }

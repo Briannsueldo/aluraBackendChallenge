@@ -21,6 +21,9 @@ public class ApiConsultation {
                 .send(request, BodyHandlers.ofString());
             /* System.out.println(response.body()); */
             return response.body();
+        } catch (IllegalStateException e) {
+            e.getMessage();
+            return null;
         } catch (Exception e) {
             System.out.println("Error" + e.getMessage());
             return null;

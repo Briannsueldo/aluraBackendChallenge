@@ -38,6 +38,10 @@ public class Menu {
                     Double amount = scan.nextDouble();
 
                     String subCurrency = preOperation();
+                    if(subCurrency == null) {
+                        System.out.println("Moneda no encontrada, por favor vuelva a comenzar");
+                        break;
+                    }
 
                     Double conversionResult = operation(currency, amount, subCurrency);
 
@@ -50,6 +54,10 @@ public class Menu {
                     Double amount = scan.nextDouble();
 
                     String subCurrency = preOperation();
+                    if(subCurrency == null) {
+                        System.out.println("Moneda no encontrada, por favor vuelva a comenzar");
+                        break;
+                    }
 
                     Double conversionResult = operation(currency, amount, subCurrency);
 
@@ -62,6 +70,10 @@ public class Menu {
                     Double amount = scan.nextDouble();
 
                     String subCurrency = preOperation();
+                    if(subCurrency == null) {
+                        System.out.println("Moneda no encontrada, por favor vuelva a comenzar");
+                        break;
+                    }
 
                     Double conversionResult = operation(currency, amount, subCurrency);
 
@@ -74,6 +86,10 @@ public class Menu {
                     Double amount = scan.nextDouble();
 
                     String subCurrency = preOperation();
+                    if(subCurrency == null) {
+                        System.out.println("Moneda no encontrada, por favor vuelva a comenzar");
+                        break;
+                    }
 
                     Double conversionResult = operation(currency, amount, subCurrency);
 
@@ -86,6 +102,10 @@ public class Menu {
                     Double amount = scan.nextDouble();
 
                     String subCurrency = preOperation();
+                    if(subCurrency == null) {
+                        System.out.println("Moneda no encontrada, por favor vuelva a comenzar");
+                        break;
+                    }
 
                     Double conversionResult = operation(currency, amount, subCurrency);
 
@@ -98,14 +118,22 @@ public class Menu {
                     Double amount = scan.nextDouble();
 
                     String subCurrency = preOperation();
+                    if(subCurrency == null) {
+                        System.out.println("Moneda no encontrada, por favor vuelva a comenzar");
+                        break;
+                    }
 
                     Double conversionResult = operation(currency, amount, subCurrency);
 
                     System.out.println("Conversion exitosa! " + amount + " " + currency + " = " + conversionResult + " " + subCurrency);
                 }
                 case 7 -> {
-
                     String currency = searchCurrency(scan);
+
+                    /* if(inputError) {
+                        System.out.println("La moneda unicamente debe contener letras");
+                        continue;
+                    } */
 
                     if(currency == null) {
                         System.out.println("Moneda no encontrada, por favor vuelva a comenzar");
@@ -116,6 +144,11 @@ public class Menu {
                     Double amount = scan.nextDouble();
 
                     String subCurrency = preOperation();
+
+                    if(subCurrency == null) {
+                        System.out.println("Moneda no encontrada, por favor vuelva a comenzar");
+                        break;
+                    }
 
                     Double conversionResult = operation(currency, amount, subCurrency);
 
@@ -174,6 +207,11 @@ public class Menu {
                 }
                 case 7 -> {
                     String subCurrency = searchCurrency(scan);
+
+                    if(subCurrency == null) {
+                        return null;
+                    }
+
                     return subCurrency.toUpperCase();
                 }
                 default -> {
@@ -193,17 +231,23 @@ public class Menu {
         try {
             System.out.println("Digite las 3 iniciales de la moneda");
             currency = scan.nextLine();
+
+            if (!currency.matches("[a-zA-Z]+")) {
+                System.out.println("La moneda unicamente debe contener letras");
+                return null;
+            }
+
+            ApiConsultationObject apiData = ApiConsultationObject.requestResult(currency);
+
+            if (apiData.getResult().equals("error")) {
+                return null;
+            } else {
+                return currency.toUpperCase();
+            }
+
         } catch (InputMismatchException e) {
             e.getMessage();
             return null;
-        }
-
-        ApiConsultationObject apiData = ApiConsultationObject.requestResult(currency);
-
-        if (apiData.getResult().equals("error")) {
-            return null;
-        } else {
-            return currency.toUpperCase();
         }
         
     }
