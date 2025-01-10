@@ -1,11 +1,11 @@
 package com.alura.services;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 import com.alura.api.ApiConsultationObject;
 
 public class Menu {
-
     public static void main(String[] args) {
         Scanner scan = new Scanner(System.in);
         int option;
@@ -21,11 +21,14 @@ public class Menu {
                     5 - COP (Peso colombiano)
                     6 - USD (Dólar estadounidense)
                     7 - Otra moneda
+                    8 - Ver historial de cambio
                     0 - Salir
 
                     """);
+
             option = scan.nextInt();
             scan.nextLine();
+
             
             switch (option) {
                 case 1 -> {
@@ -40,10 +43,92 @@ public class Menu {
 
                     System.out.println("Conversion exitosa! " + amount + " " + currency + " = " + conversionResult + " " + subCurrency);
                 }
+                case 2 -> {
+                    String currency = "BOB";
+
+                    System.out.println("Ingrese el monto a cambiar");
+                    Double amount = scan.nextDouble();
+
+                    String subCurrency = preOperation();
+
+                    Double conversionResult = operation(currency, amount, subCurrency);
+
+                    System.out.println("Conversion exitosa! " + amount + " " + currency + " = " + conversionResult + " " + subCurrency);
+                }
+                case 3 -> {
+                    String currency = "BRL";
+
+                    System.out.println("Ingrese el monto a cambiar");
+                    Double amount = scan.nextDouble();
+
+                    String subCurrency = preOperation();
+
+                    Double conversionResult = operation(currency, amount, subCurrency);
+
+                    System.out.println("Conversion exitosa! " + amount + " " + currency + " = " + conversionResult + " " + subCurrency);
+                }
+                case 4 -> {
+                    String currency = "CLP";
+
+                    System.out.println("Ingrese el monto a cambiar");
+                    Double amount = scan.nextDouble();
+
+                    String subCurrency = preOperation();
+
+                    Double conversionResult = operation(currency, amount, subCurrency);
+
+                    System.out.println("Conversion exitosa! " + amount + " " + currency + " = " + conversionResult + " " + subCurrency);
+                }
+                case 5 -> {
+                    String currency = "COP";
+
+                    System.out.println("Ingrese el monto a cambiar");
+                    Double amount = scan.nextDouble();
+
+                    String subCurrency = preOperation();
+
+                    Double conversionResult = operation(currency, amount, subCurrency);
+
+                    System.out.println("Conversion exitosa! " + amount + " " + currency + " = " + conversionResult + " " + subCurrency);
+                }
+                case 6 -> {
+                    String currency = "USD";
+
+                    System.out.println("Ingrese el monto a cambiar");
+                    Double amount = scan.nextDouble();
+
+                    String subCurrency = preOperation();
+
+                    Double conversionResult = operation(currency, amount, subCurrency);
+
+                    System.out.println("Conversion exitosa! " + amount + " " + currency + " = " + conversionResult + " " + subCurrency);
+                }
+                case 7 -> {
+
+                    String currency = searchCurrency(scan);
+
+                    if(currency == null) {
+                        System.out.println("Moneda no encontrada, por favor vuelva a comenzar");
+                        continue;
+                    }
+                    
+                    System.out.println("Ingrese el monto a cambiar");
+                    Double amount = scan.nextDouble();
+
+                    String subCurrency = preOperation();
+
+                    Double conversionResult = operation(currency, amount, subCurrency);
+
+                    System.out.println("Conversion exitosa! " + amount + " " + currency + " = " + conversionResult + " " + subCurrency);
+                }
+                case 8 -> {
+                    showHistory();
+                }
+                default -> {
+                    System.out.println("Opcion incorrecta, intente nuevamente");
+                }
             }
         } while (option != 0);
-
-        scan.close();
     }
 
     protected static String preOperation() {
@@ -87,6 +172,10 @@ public class Menu {
                 case 6 -> {
                     return "USD";
                 }
+                case 7 -> {
+                    String subCurrency = searchCurrency(scan);
+                    return subCurrency.toUpperCase();
+                }
                 default -> {
                     System.out.println("Opcion incorrecta");
                     scan.close();
@@ -98,15 +187,55 @@ public class Menu {
         
     }
 
+    protected static String searchCurrency(Scanner scan) {
+        String currency;
+
+        try {
+            System.out.println("Digite las 3 iniciales de la moneda");
+            currency = scan.nextLine();
+        } catch (InputMismatchException e) {
+            e.getMessage();
+            return null;
+        }
+
+        ApiConsultationObject apiData = ApiConsultationObject.requestResult(currency);
+
+        if (apiData.getResult().equals("error")) {
+            return null;
+        } else {
+            return currency.toUpperCase();
+        }
+        
+    }
+
     protected static Double operation(String currency, Double amount, String subCurrency) {
 
         ApiConsultationObject apiData = ApiConsultationObject.requestResult(currency);
 
         Double subCurrencyValue = apiData.getConversionRates().get(subCurrency);
         
-        Double conversionResult = amount * subCurrencyValue;   
+        Double conversionResult = amount * subCurrencyValue;
+
+        String historyEntry = amount + " " + currency + " ---> " + subCurrency + " " + conversionResult;
+        History.newHistoryEntry(historyEntry);
+        Time.saveDate();
 
         return conversionResult;
+    }
+
+    protected static void showHistory() {
+        if (History.conversionHistory.size() == 0) {
+            System.out.println("Historial vacio");
+        }
+
+        for (int i = 0 ; i < History.conversionHistory.size() ; i++) {
+            String conversionData = History.conversionHistory.get(i);
+            String timeData = Time.dateHistory.get(i);
+
+            System.out.println(
+                timeData + "     " + conversionData
+            );
+        }
     }
 
 }
